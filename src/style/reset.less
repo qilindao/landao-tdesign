@@ -1,0 +1,164 @@
+// 对部分样式进行重置
+body {
+  color: var(--td-text-color-secondary);
+  font: var(--td-font-body-medium);
+  font-family: -apple-system, BlinkMacSystemFont, var(--td-font-family);
+  -webkit-font-smoothing: antialiased;
+  padding: 0;
+  margin: 0;
+}
+
+pre {
+  font-family: var(--td-font-family);
+}
+
+ul,
+dl,
+li,
+dd,
+dt {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+figure,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+&::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+&::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  background-color: var(--td-scrollbar-color);
+}
+/** -------------------不要删除，可以修改----------------- **/
+/** ld-form 表单样式 **/
+.ld-form {
+  .t-form__item.t-form__item {
+    margin-bottom: var(--td-comp-size-xs) !important;
+  }
+}
+/** t-table 右侧操作按钮组样式 **/
+.table-action {
+  .t-button {
+    padding-left: var(--td-comp-paddingLR-xxs) !important;
+    padding-right: var(--td-comp-paddingLR-xxs) !important;
+  }
+}
+/** 重置 t-table 样式 **/
+:root {
+  --ld-table-td-bg-color: #fafafa;
+  --ld-table-td-border-color: #f0f0f0;
+  --ld-table-td-shadow-color: rgba(5, 5, 5, 0.06);
+}
+.t-table {
+  &__header tr,
+  &__header--fixed:not(&__header--multiple) > tr > th {
+    background-color: var(--ld-table-td-bg-color);
+  }
+  /** 没有表格编框 **/
+  &__content--scrollable-to-left &__cell--fixed-left-last::after {
+    border-right: 0 none !important;
+    box-shadow: inset 10px 0 8px -8px var(--ld-table-td-shadow-color);
+  }
+  &__content--scrollable-to-right &__cell--fixed-right-first::after {
+    border-left: 0 none !important;
+    box-shadow: inset -10px 0 8px -8px var(--ld-table-td-shadow-color);
+  }
+  /** 有表格边框 **/
+  &--bordered {
+    &.t-table__content--scrollable-to-left {
+      .t-table__cell--fixed-left-last::after {
+        border-right: 0 none !important;
+        box-shadow: inset 10px 0 8px -8px var(--ld-table-td-shadow-color);
+      }
+    }
+    &.t-table__content--scrollable-to-right {
+      .t-table__cell--fixed-right-first::after {
+        // border-left-color: var(--ld-table-td-border-color);
+        border-left: 0 none !important;
+        box-shadow: inset -10px 0 8px -8px var(--ld-table-td-shadow-color);
+      }
+    }
+    td,
+    th {
+      border-left-color: var(--ld-table-td-border-color);
+    }
+    .t-table__content {
+      border-color: var(--ld-table-td-border-color);
+    }
+  }
+  &--column-fixed {
+    .t-table__cell--fixed-left-last::after {
+      width: 30px;
+    }
+    .t-table__cell--fixed-right-first::after {
+      width: 30px;
+    }
+  }
+  &--striped {
+    &.t-table--header-fixed {
+      > .t-table__content > table > tbody tr:nth-of-type(even) {
+        background-color: var(--ld-table-td-bg-color);
+      }
+    }
+    &:not(.t-table--header-fixed) {
+      > .t-table__content
+        > table
+        > tbody
+        > tr:nth-of-type(odd):not(.t-table__expanded-row) {
+        background-color: var(--td-bg-color-container);
+      }
+    }
+    &:not(.t-table--header-fixed) {
+      > .t-table__content
+        > table
+        > tbody
+        > tr:nth-of-type(even):not(.t-table__expanded-row) {
+        background-color: var(--ld-table-td-bg-color);
+      }
+    }
+
+    &.t-table--hoverable {
+      &.t-table__header--fixed {
+        tbody tr:nth-of-type(even):hover {
+          background-color: var(--ld-table-td-bg-color);
+        }
+      }
+
+      &:not(.t-table__header--fixed) {
+        > .t-table__content > table > tbody tr:nth-of-type(odd):hover {
+          background-color: var(--ld-table-td-bg-color);
+        }
+      }
+
+      > .t-table__content > table > tbody {
+        tr {
+          &:hover {
+            background-color: var(--ld-table-td-bg-color);
+          }
+        }
+      }
+    }
+  }
+
+  &--hoverable tbody tr:hover {
+    background-color: #fafafa;
+  }
+}
