@@ -1,0 +1,62 @@
+{
+  "name": "yiyuan",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev:mock": "vite --open --mode mock",
+    "dev": "vite --open --mode development",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vueuse/core": "^10.3.0",
+    "axios": "^1.4.0",
+    "crypto-js": "^4.1.1",
+    "dayjs": "^1.11.9",
+    "echarts": "^5.4.3",
+    "lodash-es": "^4.17.21",
+    "nprogress": "^0.2.0",
+    "pinia": "^2.1.6",
+    "pinia-plugin-persistedstate": "^3.2.0",
+    "qs": "^6.11.2",
+    "spark-md5": "^3.0.2",
+    "tdesign-icons-vue-next": "^0.1.12",
+    "tdesign-vue-next": "^1.5.3",
+    "tvision-color": "^1.6.0",
+    "vue": "^3.3.4",
+    "vue-clipboard3": "^2.0.0",
+    "vue-router": "^4.2.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vitejs/plugin-vue-jsx": "^3.0.1",
+    "@vue/compiler-sfc": "^3.3.4",
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "less": "^4.2.0",
+    "mockjs": "^1.1.0",
+    "postcss-html": "^1.5.0",
+    "postcss-less": "^6.0.0",
+    "vite": "^4.4.9",
+    "vite-plugin-cdn-import": "^0.3.5",
+    "vite-plugin-html": "^3.2.0",
+    "vite-plugin-mock": "^3.0.0",
+    "vite-svg-loader": "^4.0.0",
+    "vue-types": "^5.1.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog-zh"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,vue,ts,tsx}": [
+      "prettier --write",
+      "pnpm run lint:fix"
+    ],
+    "*.{html,vue,css,sass,less}": [
+      "pnpm run stylelint:fix"
+    ]
+  }
+}
