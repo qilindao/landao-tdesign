@@ -1,0 +1,22 @@
+:root,
+:root[theme-mode="light"] {
+  --ld-help-icon-color: var(--td-gray-color-8);
+  --ld-help-icon-color-hover: var(--td-font-gray-1);
+}
+:root[theme-mode="dark"] {
+  --ld-help-icon-color: var(--td-font-white-1);
+  --ld-help-icon-color-hover: var(--td-gray-color-8);
+}
+.ld-help-msg {
+  display: inline-block;
+  margin: 0 6px;
+  cursor: pointer;
+  .t-icon {
+    color: var(--ld-help-icon-color);
+    transition: all 0.6s;
+    &:hover {
+      // transform: scale(1.5);
+      // color: var(--ld-help-icon-color-hover);
+    }
+  }
+}
