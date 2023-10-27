@@ -1,0 +1,20 @@
+import { unref, watch, ref, computed } from "vue";
+
+export function useLoading(props) {
+  const loadingRef = ref(unref(props).loading);
+
+  watch(
+    () => unref(props).loading,
+    (loading) => {
+      loadingRef.value = loading;
+    }
+  );
+
+  function setLoading(loading) {
+    loadingRef.value = loading;
+  }
+
+  const getLoading = computed(() => unref(loadingRef));
+
+  return { setLoading, getLoading };
+}
