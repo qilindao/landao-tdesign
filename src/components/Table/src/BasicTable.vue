@@ -25,12 +25,13 @@ import { usePagination } from "./hooks/usePagination";
 import { createTableContext } from "./hooks/useTableContext";
 import { useColumns } from "./hooks/useColumns";
 import { useEditTableRow } from "./hooks/useEditTableRow";
+import { useRowSelection } from "./hooks/useRowSelection";
 import { omit } from "lodash-es";
 
 export default defineComponent({
   name: "LdTable",
   props: basicProps,
-  emits: ["fetch-success", "fetch-error", "register"],
+  emits: ["fetch-success", "fetch-error", "register", "select-change"],
   setup(props, { attrs, emit, slots, expose }) {
     const wrapRef = ref(null);
 
@@ -88,6 +89,14 @@ export default defineComponent({
       validateTableData,
     } = useEditTableRow(tableElRef, getRowKey);
 
+    const {
+      getSelectRowKeys,
+      setSelectedRow,
+      getSelectRows,
+      setSelectedRowKeys,
+      clearSelectedRowKeys,
+      deleteSelectRowByKey,
+    } = useRowSelection(emit);
 
     const getBindValues = computed(() => {
       const dataSource = unref(getDataSourceRef);
@@ -103,7 +112,12 @@ export default defineComponent({
         pagination: unref(getPaginationInfo)
           ? toRaw(unref(getPaginationInfo))
           : null,
-        editableRowKeys: unref(getEditableRowKeys()),
+        editableRowKeys: unref(getEditableRowKeys()), //修改行
+        selectedRowKeys: getSelectRowKeys(), //单选，多选中行
+        onSelectChange: (value, { selectedRowData }) => {
+          //选中行发生变化时触发
+          setSelectedRow(value, selectedRowData);
+        },
       };
       propsData = omit(propsData, ["onPageChange", "dataSource"]);
       return propsData;
@@ -146,6 +160,11 @@ export default defineComponent({
       validateTableData,
       updateRowByIdx,
       deleteRowByIdx,
+      getSelectRowKeys,
+      getSelectRows,
+      setSelectedRowKeys,
+      clearSelectedRowKeys,
+      deleteSelectRowByKey,
     };
     createTableContext({ ...tableAction, wrapRef, getBindValues });
     expose(tableAction);

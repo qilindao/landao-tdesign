@@ -121,6 +121,40 @@ export function useTable(tableProps) {
     validateTableData: async () => {
       return toRaw(getTableInstance().validateTableData());
     },
+    /**
+     * 获取选中行key
+     * @returns
+     */
+    getSelectRowKeys: () => {
+      return toRaw(getTableInstance().getSelectRowKeys());
+    },
+    /**
+     * 获取选中行数据
+     * @returns
+     */
+    getSelectRows: () => {
+      return toRaw(getTableInstance().getSelectRows());
+    },
+    /**
+     * 设置默认选中行keys
+     * @param {String | Number | Array} rowKeys
+     */
+    setSelectedRowKeys: (rowKeys) => {
+      getTableInstance().setSelectedRowKeys(rowKeys);
+    },
+    /**
+     * 清空选中行
+     */
+    clearSelectedRowKeys: () => {
+      getTableInstance().clearSelectedRowKeys();
+    },
+    /**
+     *  根据 key 删除取消选中行
+     * @param {String | Number} rowKey
+     */
+    deleteSelectRowByKey: (rowKey) => {
+      getTableInstance().deleteSelectRowByKey(key);
+    },
   };
 
   return [register, methods];
