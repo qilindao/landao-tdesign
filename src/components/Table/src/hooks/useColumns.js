@@ -41,7 +41,7 @@ function handleIndexColumn(propsRef, getPaginationRef, columns) {
     title: INDEX_COLUMN_TITLE,
     colKey: INDEX_COLUMN_FLAG,
     align: "center",
-    width: 50,
+    width: 70,
     cell: (h, { rowIndex, colIndex }) => {
       const getPagination = unref(getPaginationRef);
       if (isBoolean(getPagination)) {

@@ -9,6 +9,8 @@
       <template #[item]="data" v-for="item in Object.keys($slots)" :key="item">
         <slot :name="item" v-bind="data || {}"></slot>
       </template>
+      <template #expandedRow="data">        <slot name="expandedRow" v-bind="data || {}"></slot>
+      </template>
       <template #empty>
         <ld-empty :desc="emptyDesc" />
       </template>
@@ -26,12 +28,19 @@ import { createTableContext } from "./hooks/useTableContext";
 import { useColumns } from "./hooks/useColumns";
 import { useEditTableRow } from "./hooks/useEditTableRow";
 import { useRowSelection } from "./hooks/useRowSelection";
+import { useRowExpanded } from "./hooks/useRowExpanded";
 import { omit } from "lodash-es";
 
 export default defineComponent({
   name: "LdTable",
   props: basicProps,
-  emits: ["fetch-success", "fetch-error", "register", "select-change"],
+  emits: [
+    "fetch-success",
+    "fetch-error",
+    "register",
+    "select-change",
+    "expand-change",
+  ],
   setup(props, { attrs, emit, slots, expose }) {
     const wrapRef = ref(null);
 
@@ -98,6 +107,8 @@ export default defineComponent({
       deleteSelectRowByKey,
     } = useRowSelection(emit);
 
+    const { getExpandRowKeys, expandChange } = useRowExpanded(getProps, emit);
+
     const getBindValues = computed(() => {
       const dataSource = unref(getDataSourceRef);
       let propsData = {
@@ -117,6 +128,12 @@ export default defineComponent({
         onSelectChange: (value, { selectedRowData }) => {
           //选中行发生变化时触发
           setSelectedRow(value, selectedRowData);
+        },
+        //展开行keys
+        expandedRowKeys: getExpandRowKeys(),
+        //展开行发生变化时触发
+        onExpandChange: (value, params) => {
+          expandChange(value, params);
         },
       };
       propsData = omit(propsData, ["onPageChange", "dataSource"]);
@@ -165,6 +182,7 @@ export default defineComponent({
       setSelectedRowKeys,
       clearSelectedRowKeys,
       deleteSelectRowByKey,
+      getExpandRowKeys,
     };
     createTableContext({ ...tableAction, wrapRef, getBindValues });
     expose(tableAction);

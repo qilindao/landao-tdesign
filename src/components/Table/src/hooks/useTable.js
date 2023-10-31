@@ -153,7 +153,13 @@ export function useTable(tableProps) {
      * @param {String | Number} rowKey
      */
     deleteSelectRowByKey: (rowKey) => {
-      getTableInstance().deleteSelectRowByKey(key);
+      getTableInstance().deleteSelectRowByKey(rowKey);
+    },
+    /**
+     * 获取展开行RowKeys
+     */
+    getExpandRowKeys: () => {
+      getTableInstance().getExpandRowKeys();
     },
   };
 

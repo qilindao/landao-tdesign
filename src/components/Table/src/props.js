@@ -65,4 +65,21 @@ export const basicProps = {
     type: String,
     default: "暂无数据",
   },
+  /**
+   * 用于控制是否显示「展开图标列」，值为 `false` 则不会显示。
+   */
+  expandIcon: {
+    type: [Boolean, Function],
+    default: false,
+  },
+  //是否允许点击行展开
+  expandOnRowClick: {
+    type: Boolean,
+    default: false,
+  },
+  //展开行内容
+  expandedRow: {
+    type: [String, Function],
+    default: "",
+  },
 };
