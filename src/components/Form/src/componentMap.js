@@ -19,12 +19,13 @@ import {
   RangeInput,
   TreeSelect,
   Transfer,
+  SelectInput,
 } from "tdesign-vue-next";
 
-import ApiSelectWidget from "./components/ApiSelect";
+import ApiSelect from "./components/ApiSelect";
 import RadioButtonGroup from "./components/RadioButtonGroup";
-
-
+import ApiTreeSelect from "./components/ApiTreeSelect";
+import ApiCascader from "./components/ApiCascader";
 
 const componentMap = new Map();
 componentMap.set("Input", Input);
@@ -43,8 +44,12 @@ componentMap.set("Cascader", Cascader);
 componentMap.set("Checkbox", Checkbox);
 componentMap.set("CheckboxGroup", CheckboxGroup);
 
-componentMap.set("ApiSelect", ApiSelectWidget);
+componentMap.set("ApiCascader", ApiCascader);
+
+componentMap.set("ApiSelect", ApiSelect);
+componentMap.set("ApiTreeSelect", ApiTreeSelect);
 componentMap.set("Select", Select);
+componentMap.set("SelectInput", SelectInput);
 componentMap.set("TreeSelect", TreeSelect);
 componentMap.set("Transfer", Transfer);
 

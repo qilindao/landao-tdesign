@@ -1,17 +1,12 @@
-import { cloneDeep, uniqBy, isFunction, get } from "lodash-es";
+import { cloneDeep, uniqBy, isFunction, get, isNil } from "lodash-es";
 import { deepMerge } from "@/landao/utils";
 import { unref, toRaw, nextTick } from "vue";
-import {
-  isNullOrUnDef,
-  isObject,
-  isArray,
-  isDef,
-  isEmpty,
-} from "@/landao/utils/is";
+import { isObject, isArray, isDef } from "@/landao/utils/is";
 import {
   handleInputNumberValue,
   dateItemType,
   defaultValueComponents,
+  isIncludeSimpleComponents,
 } from "../helper";
 import { dateUtil } from "@/landao/utils/date";
 
@@ -199,7 +194,7 @@ export function useFormEvents({
   function getFieldsValue() {
     const formEl = unref(formElRef);
     if (!formEl) return {};
-    return handleFormValues(formModel);
+    return handleFormValues(toRaw(unref(formModel)));
   }
 
   /**
@@ -311,7 +306,7 @@ export function useFormEvents({
     }
     const hasField = updateData.every(
       (item) =>
-        item.component === "Divider" ||
+        isIncludeSimpleComponents(item.component) ||
         (Reflect.has(item, "field") && item.field)
     );
     if (!hasField) {
@@ -319,15 +314,13 @@ export function useFormEvents({
       return;
     }
     let schema = [];
+    let updatedSchema = [];
+    //TODO:表单使用updateSchema时只对更新的schema重设默认值
     unref(getSchema).forEach((val) => {
-      let _val;
-      updateData.forEach((item) => {
-        if (val.field === item.field) {
-          _val = item;
-        }
-      });
-      if (_val !== undefined && val.field === _val.field) {
-        const newSchema = deepMerge(val, _val);
+      const updatedItem = updateData.find((item) => val.field === item.field);
+      if (updatedItem) {
+        const newSchema = deepMerge(val, updatedItem);
+        updatedSchema.push(newSchema);
         schema.push(newSchema);
       } else {
         schema.push(val);
@@ -369,7 +362,7 @@ export function useFormEvents({
 
     const hasField = updateData.every(
       (item) =>
-        item.component === "Divider" ||
+        isIncludeSimpleComponents(item.component) ||
         (Reflect.has(item, "field") && item.field)
     );
 
@@ -396,17 +389,17 @@ export function useFormEvents({
     const currentFieldsValue = getFieldsValue();
     schemas.forEach((item) => {
       if (
-        item.component != "Divider" &&
+        !isIncludeSimpleComponents(item.component) &&
         Reflect.has(item, "field") &&
         item.field &&
-        !isNullOrUnDef(item.defaultValue) &&
+        !isNil(item.defaultValue) &&
         (!(item.field in currentFieldsValue) ||
-          isNullOrUnDef(currentFieldsValue[item.field]) ||
-          isEmpty(currentFieldsValue[item.field]))
+          isNil(currentFieldsValue[item.field]))
       ) {
         obj[item.field] = item.defaultValue;
       }
     });
+
     setFieldsValue(obj);
   }
 

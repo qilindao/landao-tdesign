@@ -6,7 +6,6 @@
     :options="getOptions"
     v-model:value="state"
     :loading="loading"
-    loadingText="请等待数据加载完成..."
   >
     <template #[item]="data" v-for="item in Object.keys($slots)">
       <slot :name="item" v-bind="data || {}"></slot>
@@ -16,11 +15,10 @@
 </template>
 
 <script>
-import { watchEffect, watch, computed, defineComponent } from "vue";
-import VueTypes from "vue-types";
+import { watchEffect, watch, ref, unref, computed, defineComponent } from "vue";
 import { get, omit } from "lodash-es";
-import { isFunction } from "@/landao/utils/is";
-import { useAttrs } from "@/landao/hooks";
+import { isFunction, isStringArray } from "@/landao/utils/is";
+import { useAttrs } from "@landao/hooks";
 import { useRuleFormItem } from "../hooks/useRuleFormItem";
 
 export default defineComponent({
@@ -28,20 +26,41 @@ export default defineComponent({
   inheritAttrs: false,
   props: {
     value: [Array, Object, String, Number],
-    numberToString: VueTypes.bool,
+    numberToString: { type: Boolean, default: false },
     api: {
       type: Function,
       default: null,
     },
     // api params
-    params: VueTypes.any.def({}),
+    params: {
+      type: Object,
+      default: () => ({}),
+    },
     // support xxx.xxx.xx
-    resultField: VueTypes.string.def(""),
-    labelField: VueTypes.string.def("label"),
-    valueField: VueTypes.string.def("value"),
-    immediate: VueTypes.bool.def(true),
-    alwaysLoad: VueTypes.bool.def(false),
-    options: VueTypes.array.def([]),
+    resultField: {
+      type: String,
+      default: "data",
+    },
+    labelField: {
+      type: String,
+      default: "label",
+    },
+    valueField: {
+      type: String,
+      default: "value",
+    },
+    immediate: {
+      type: Boolean,
+      default: true,
+    },
+    alwaysLoad: {
+      type: Boolean,
+      default: false,
+    },
+    options: {
+      type: Array,
+      default: () => [],
+    },
   },
   emits: ["options-change", "change", "update:value"],
   setup(props, { emit }) {
@@ -53,15 +72,23 @@ export default defineComponent({
     const [state] = useRuleFormItem(props, "value", "change", emitData);
     const getOptions = computed(() => {
       const { labelField, valueField, numberToString } = props;
-
+      //判断数组中是否是字符串值,
+      const isStringArr = isStringArray(unref(options));
       let data = unref(options).reduce((prev, next) => {
         if (next) {
-          const value = get(next, valueField);
-          prev.push({
-            ...omit(next, [labelField, valueField]),
-            label: get(next, labelField),
-            value: numberToString ? `${value}` : value,
-          });
+          if (isStringArr) {
+            prev.push({
+              label: next,
+              value: next,
+            });
+          } else {
+            const value = get(next, valueField);
+            prev.push({
+              ...omit(next, [labelField, valueField]),
+              label: get(next, labelField),
+              value: numberToString ? `${value}` : value,
+            });
+          }
         }
         return prev;
       }, []);
@@ -128,7 +155,7 @@ export default defineComponent({
       emitData.value = args;
     }
 
-    return { state, attrs, getOptions, loading, t, handleFetch, handleChange };
+    return { state, attrs, getOptions, loading, handleFetch, handleChange };
   },
 });
 </script>

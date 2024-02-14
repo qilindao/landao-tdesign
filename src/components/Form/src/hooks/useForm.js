@@ -60,7 +60,9 @@ export function useForm(props) {
      */
     validate: async () => {
       const form = await getForm();
-      return form.validate();
+      const validate = await form.validate();
+      if (typeof validate === "object") throw validate;
+      else return true;
     },
     /**
      * 清除验证

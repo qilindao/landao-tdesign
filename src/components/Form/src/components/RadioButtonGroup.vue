@@ -13,7 +13,7 @@
 
 <script>
 import { defineComponent, computed, ref } from "vue";
-import { useAttrs } from "@/landao/hooks";
+import { useAttrs } from "@landao/hooks";
 import { isString } from "@/landao/utils/is";
 import { useRuleFormItem } from "../hooks/useRuleFormItem";
 

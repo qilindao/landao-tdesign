@@ -11,6 +11,13 @@ export const basicProps = {
     type: Array,
     default: () => [],
   },
+  // 转化时间
+  transformDateFunc: {
+    type: Function,
+    default: (date) => {
+      return date?.format?.("YYYY-MM-DD HH:mm:ss") ?? date;
+    },
+  },
   showActionButtonGroup: VueTypes.bool.def(true), //是否显示操作按钮(重置/提交)
   showSubmitButton: VueTypes.bool.def(true), //是否显示提交按钮
   showResetButton: VueTypes.bool.def(true), //是否显示重置按钮

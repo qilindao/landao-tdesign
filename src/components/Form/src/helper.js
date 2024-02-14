@@ -40,3 +40,13 @@ export function handleInputNumberValue(component, val) {
   }
   return val;
 }
+
+export const simpleComponents = ["Divider", "BasicTitle"];
+/**
+ * 无需操作 components
+ * @param {*} component 
+ * @returns 
+ */
+export function isIncludeSimpleComponents(component) {
+  return simpleComponents.includes(component || "");
+}

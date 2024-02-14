@@ -1,14 +1,13 @@
-import { unref, toRaw } from "vue";
+import { unref } from "vue";
 import {
   isNullOrUnDef,
-  isNotEmpty,
   isObject,
   isString,
   isArray,
   isFunction,
 } from "@/landao/utils/is";
 import { dateUtil } from "@/landao/utils/date";
-import { get, unset, set, cloneDeep } from "lodash-es";
+import { get, unset, set, cloneDeep, isNil } from "lodash-es";
 
 /**
  * @desription deconstruct array-link key. This method will mutate the target.
@@ -63,7 +62,9 @@ export function useFormValues({
 }) {
   //处理表单值
   function handleFormValues(values) {
-    if (!isObject(values)) return {};
+    if (!isObject(values)) {
+      return {};
+    }
     const res = {};
     for (const item of Object.entries(values)) {
       let [, value] = item;
@@ -71,17 +72,17 @@ export function useFormValues({
       if (!key || (isArray(value) && value.length === 0) || isFunction(value)) {
         continue;
       }
-      if (value instanceof Date) {
-        //处理单个时间格式
-        const schema = unref(getSchema).find((item) => item.field === key);
-        value = formatDateStr(value, schema.formateValue);
+      const transformDateFunc = unref(getProps).transformDateFunc;
+      if (isObject(value)) {
+        value = transformDateFunc?.(value);
       }
+
+      if (isArray(value) && value[0]?.format && value[1]?.format) {
+        value = value.map((item) => transformDateFunc?.(item));
+      }
+      // Remove spaces
       if (isString(value)) {
-        if (value === "") {
-          value = undefined;
-        } else {
-          value = value.trim();
-        }
+        value = value.trim();
       }
       if (
         !tryDeconstructArray(key, value, res) &&
@@ -91,7 +92,6 @@ export function useFormValues({
         set(res, key, value);
       }
     }
-
     return handleRangeTimeValue(res);
   }
 
@@ -111,20 +111,22 @@ export function useFormValues({
       if (!field || !startTimeKey || !endTimeKey) {
         continue;
       }
+      // If the value to be converted is empty, remove the field
       if (!get(values, field)) {
         unset(values, field);
         continue;
       }
+
       const [startTime, endTime] = get(values, field);
 
       const [startTimeFormat, endTimeFormat] = Array.isArray(format)
         ? format
         : [format, format];
 
-      if (isNotEmpty(startTime)) {
+      if (!isNil(startTime) && !isEmpty(startTime)) {
         set(values, startTimeKey, formatTime(startTime, startTimeFormat));
       }
-      if (isNotEmpty(endTime)) {
+      if (!isNil(endTime) && !isEmpty(endTime)) {
         set(values, endTimeKey, formatTime(endTime, endTimeFormat));
       }
       unset(values, field);
@@ -158,8 +160,9 @@ export function useFormValues({
         });
       }
       //默认值存在的情况下，设置默认值
-      if (!isNullOrUnDef(defaultValue)) {
+      if (!isNil(defaultValue)) {
         obj[item.field] = defaultValue;
+
         if (formModel[item.field] === undefined) {
           formModel[item.field] = defaultValue;
         }
