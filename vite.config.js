@@ -47,11 +47,12 @@ export default defineConfig(async ({ mode, command }) => {
       https: false,
       //端口
       port: VITE_PORT,
+      host: "0.0.0.0",
       proxy: createProxy(VITE_API_PROXY),
       //服务启动时是否自动打开浏览器
       open: true,
       sourcemap: false,
       polyfillDynamicImport: false, // 必须为false
-    }
+    },
   };
 });
