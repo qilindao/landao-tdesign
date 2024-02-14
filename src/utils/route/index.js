@@ -92,7 +92,10 @@ export function transformObjectToRoute(routeList) {
     const component = route.component;
 
     if (component) {
-      if (component.toUpperCase() === "LAYOUT") {
+      if (
+        component.toUpperCase() === "LAYOUT" ||
+        component.toUpperCase() === "BLANK"
+      ) {
         route.component = LayoutMap.get(component.toUpperCase());
       } else {
         route.children = [cloneDeep(route)];
