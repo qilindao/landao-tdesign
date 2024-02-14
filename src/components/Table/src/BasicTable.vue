@@ -1,15 +1,39 @@
 <template>
   <div ref="wrapRef">
+    <TableHeader v-bind="getToolbarProps" :tableAction="tableAction">
+      <template v-if="$slots.toolbar" #toolbar="{}">
+        <slot name="toolbar"></slot>
+      </template>
+    </TableHeader>
+    <!-- 树形组件，columns 必须通过 LdTable 传递，不能通过 useTable 传递，否则 useTreeData.tsx 初始化报错-->
+    <t-enhanced-table
+      v-if="isTreeTable"
+      ref="tableElRef"
+      v-bind="getBindValues"
+      @page-change="handlePageChange"
+    >
+      <template #[item]="data" v-for="item in Object.keys($slots)" :key="item">
+        <slot :name="item" v-bind="data || {}"></slot>
+      </template>
+      <template #expandedRow="data">
+        <slot name="expandedRow" v-bind="data || {}"></slot>
+      </template>
+      <template #empty>
+        <ld-empty :desc="emptyDesc" />
+      </template>
+    </t-enhanced-table>
     <t-table
       ref="tableElRef"
       v-bind="getBindValues"
       @page-change="handlePageChange"
       @row-edit="editTableRow"
+      v-else
     >
       <template #[item]="data" v-for="item in Object.keys($slots)" :key="item">
         <slot :name="item" v-bind="data || {}"></slot>
       </template>
-      <template #expandedRow="data">        <slot name="expandedRow" v-bind="data || {}"></slot>
+      <template #expandedRow="data">
+        <slot name="expandedRow" v-bind="data || {}"></slot>
       </template>
       <template #empty>
         <ld-empty :desc="emptyDesc" />
@@ -30,6 +54,7 @@ import { useEditTableRow } from "./hooks/useEditTableRow";
 import { useRowSelection } from "./hooks/useRowSelection";
 import { useRowExpanded } from "./hooks/useRowExpanded";
 import { omit } from "lodash-es";
+import TableHeader from "./components/TableHeader";
 
 export default defineComponent({
   name: "LdTable",
@@ -41,6 +66,9 @@ export default defineComponent({
     "select-change",
     "expand-change",
   ],
+  components: {
+    TableHeader,
+  },
   setup(props, { attrs, emit, slots, expose }) {
     const wrapRef = ref(null);
 
@@ -108,7 +136,7 @@ export default defineComponent({
     } = useRowSelection(emit);
 
     const { getExpandRowKeys, expandChange } = useRowExpanded(getProps, emit);
-
+    
     const getBindValues = computed(() => {
       const dataSource = unref(getDataSourceRef);
       let propsData = {
@@ -150,6 +178,26 @@ export default defineComponent({
       await reload();
     }
 
+    //表格头部刷新按钮,button,在hook调用的时候合并
+    const toolbarPropsRef = ref({});
+
+    //TableHeader props
+    const getToolbarProps = computed(() => {
+      const { actionButtons = [] } = props;
+      const opt = {
+        buttons: [...actionButtons],
+      };
+      return {
+        ...opt,
+        ...unref(toolbarPropsRef),
+      };
+    });
+
+    //设置toolbar button 属性
+    const setToolbarProps = (props) => {
+      toolbarPropsRef.value = { ...unref(toolbarPropsRef), ...props };
+    };
+
     const tableAction = {
       reload,
       setPagination,
@@ -183,6 +231,7 @@ export default defineComponent({
       clearSelectedRowKeys,
       deleteSelectRowByKey,
       getExpandRowKeys,
+      setToolbarProps,
     };
     createTableContext({ ...tableAction, wrapRef, getBindValues });
     expose(tableAction);
@@ -192,8 +241,11 @@ export default defineComponent({
       wrapRef,
       tableElRef,
       getBindValues,
+      getColumnsRef,
       handlePageChange,
       editTableRow,
+      tableAction,
+      getToolbarProps,
     };
   },
 });

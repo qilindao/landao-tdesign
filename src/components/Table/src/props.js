@@ -27,6 +27,11 @@ export const basicProps = {
     type: Array,
     default: () => [],
   },
+  //顶部按钮
+  actionButtons: {
+    type: Array,
+    default: () => [],
+  },
   //是否展示序号列
   showIndexColumn: { type: Boolean, default: false },
   //数据源
@@ -81,5 +86,10 @@ export const basicProps = {
   expandedRow: {
     type: [String, Function],
     default: "",
+  },
+  //是否树形表格
+  isTreeTable: {
+    type: Boolean,
+    default: false,
   },
 };

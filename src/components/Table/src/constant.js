@@ -3,7 +3,7 @@ export const PAGE_SIZE = 30;
 //当前页字段
 export const PAGE_FIELD = "page";
 //一页显示总数字段
-export const PAGE_SIZE_FIELD = "page_size";
+export const PAGE_SIZE_FIELD = "pageSize";
 
 export const LIST_FIELD = "list";
 

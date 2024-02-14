@@ -100,7 +100,7 @@ export function useColumns(propsRef, getPaginationRef) {
     }
   );
 
-  function getColumns(opt) {
+  function getColumns() {
     const columns = toRaw(unref(getColumnsRef));
     return columns;
   }

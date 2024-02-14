@@ -19,6 +19,19 @@ export function useTable(tableProps) {
 
     tableRef.value = instance;
     tableProps && instance.setProps(getDynamicProps(tableProps));
+
+
+    if (tableRef) {
+      //设置表格头部刷新按钮
+      const {
+        actionButtons = []
+      } = tableProps;
+      instance.setToolbarProps({
+        buttons: [...actionButtons],
+      });
+    }
+
+
     loadedRef.value = true;
 
     stopWatch?.();
