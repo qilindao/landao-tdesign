@@ -1,0 +1,34 @@
+{
+  "name": "@landao/hooks",
+  "version": "1.0.5",
+  "description": "vue hooks library",
+  "keywords": [
+    "hooks",
+    "vue3 hooks"
+  ],
+  "homepage": "https://qilindao.github.io/docs/",
+  "bugs": {
+    "url": "https://github.com/qilindao/landao-tdesign/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+git+https://github.com/qilindao/landao-tdesign.git",
+    "directory": "packages/hooks"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "scripts": {
+    "clean": "pnpm rimraf .turbo node_modules dist"
+  },
+  "dependencies": {
+    "@vueuse/core": "^10.7.1",
+    "lodash-es": "^4.17.21",
+    "echarts": "^5.4.3",
+    "vue": "^3.4.5"
+  },
+  "devDependencies": {}
+}
