@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import { useECharts } from "@/landao/hooks";
+import { useECharts } from "@landao/hooks";
 import {
   computed,
   nextTick,

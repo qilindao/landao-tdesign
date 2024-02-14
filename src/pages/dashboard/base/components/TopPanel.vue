@@ -70,7 +70,7 @@ export default {
 </script>
 
 <script setup>
-import { useECharts } from "@/landao/hooks";
+import { useECharts } from "@landao/hooks";
 
 import { FileIcon, UsergroupIcon } from "tdesign-icons-vue-next";
 import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";

@@ -1,15 +1,10 @@
 <template>
   <div class="ld-layout-container">
     <div class="ld-layout">
-      <div
-        class="ld-layout__left"
-        v-if="ifLeft"
-        v-show="leftShow"
-        :style="leftSideStyle"
-      >
+      <div class="ld-layout__left" v-show="leftShow" :style="leftSideStyle">
         <slot name="left"></slot>
       </div>
-      <div class="ld-layout__main">
+      <div :class="mainClass">
         <span class="left-side-icon" v-if="ifLeft" @click="handleLeftSlide">
           <span :class="{ 'pin-arrow': true, 'arrow-right': !leftShow }"></span>
         </span>
@@ -20,12 +15,7 @@
           <span :class="{ 'pin-arrow': true, 'arrow-right': rightShow }"></span>
         </span>
       </div>
-      <div
-        class="ld-layout__right"
-        v-if="ifRight"
-        v-show="rightShow"
-        :style="rightSideStyle"
-      >
+      <div class="ld-layout__right" v-show="rightShow" :style="rightSideStyle">
         <slot name="right"></slot>
       </div>
     </div>
@@ -59,7 +49,7 @@ export default defineComponent({
   setup(props, { slots }) {
     const leftShow = ref(true),
       rightShow = ref(true);
-
+    const name = "ld-layout";
     const leftSideStyle = computed(() => {
       const width = isNumber(props.leftSideWidth)
         ? `${props.leftSideWidth}px`
@@ -75,6 +65,13 @@ export default defineComponent({
         width,
       };
     });
+    const mainClass = computed(() => [
+      `${name}__main`,
+      {
+        [`${name}__main--left`]: slots.left,
+        [`${name}__main--right`]: slots.right,
+      },
+    ]);
 
     const ifLeft = computed(() => props.enableLeftSide && !!slots.left);
     const ifRight = computed(() => props.enableRightSide && !!slots.right);
@@ -95,6 +92,7 @@ export default defineComponent({
       ifRight,
       leftShow,
       rightShow,
+      mainClass,
       handleLeftSlide,
       handleRightSlide,
     };
@@ -124,38 +122,38 @@ export default defineComponent({
   height: 100%;
   width: 100%;
   z-index: 10;
+  height: 100%;
+  background-color: var(--td-bg-color-container);
+  border-radius: var(--td-radius-medium);
+  &__main,
   &__left,
-  &__right,
-  &__main {
-    height: 100%;
-    background-color: var(--td-bg-color-container);
-    border-radius: var(--td-radius-medium);
-    padding: var(--td-comp-paddingTB-l) var(--td-comp-paddingLR-l);
-  }
-  &__left {
-    margin-right: var(--td-comp-margin-m);
-  }
   &__right {
-    margin-left: var(--td-comp-margin-m);
+    padding: var(--td-comp-paddingTB-l) var(--td-comp-paddingLR-l);
   }
   &__main {
     flex: 1;
     position: relative;
     width: 100%;
+    &--left {
+      border-left: 1px solid var(--td-gray-color-2);
+    }
+    &--right {
+      border-right: 1px solid var(--td-gray-color-2);
+    }
     .left-side-icon,
     .right-side-icon {
       font-size: 18px;
       background-color: var(--td-bg-color-container);
       // transition: background-color 0.3s, var(--el-transition-color);
       transition: top 0.2s ease, opacity 0.2s ease;
-      border-radius: 8px;
+      // border-radius: 8px;
       height: 44px;
-      width: 14px;
+      width: 12px;
       cursor: pointer;
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      border: 1px solid var(--td-border-level-1-color);
+      // border: 1px solid var(--td-border-level-1-color);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -163,6 +161,8 @@ export default defineComponent({
       opacity: 1;
       will-change: top, opacity;
       z-index: 1000;
+      border-style: solid;
+      border-color: var(--td-border-level-1-color);
       .pin-arrow {
         display: inline-block;
         border-left: 5px solid #8a8f8d;
@@ -179,11 +179,17 @@ export default defineComponent({
       }
     }
     .left-side-icon {
-      left: -8px;
+      left: 0px;
+      border-width: 1px 1px 1px 0;
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
     }
 
     .right-side-icon {
-      right: -8px;
+      right: 0px;
+      border-width: 1px 0px 1px 1px;
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
     }
     &--container {
       position: absolute;

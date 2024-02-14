@@ -51,12 +51,7 @@
         </t-card>
       </t-col>
       <t-col :xs="12" :xl="3">
-        <product-card
-          v-for="(item, index) in PRODUCT_LIST"
-          :key="index"
-          :product="item"
-          :class="{ 'row-margin': index !== 0, 'product-card': true }"
-        />
+        
       </t-col>
     </t-row>
     <t-card
@@ -95,7 +90,7 @@ export default {
 </script>
 
 <script setup>
-import { useECharts } from "@/landao/hooks";
+import { useECharts } from "@landao/hooks";
 import {
   computed,
   nextTick,
@@ -106,7 +101,6 @@ import {
   ref,
 } from "vue";
 
-import ProductCard from '@/components/product-card/index.vue';
 import Trend from '@/components/trend/index.vue';
 import { useSettingStore } from "@/store";
 // import { changeChartsTheme } from '@/utils/color';

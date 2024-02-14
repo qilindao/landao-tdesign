@@ -16,7 +16,7 @@ import { debounce } from "lodash-es";
 import { computed, ref, unref, watch } from "vue";
 
 import { prefix } from "@/config/global";
-import { useWindowSizeFn } from "@/landao/hooks";
+import { useWinResize } from "@landao/hooks";
 import { useSettingStore } from "@/store";
 
 defineProps({
@@ -81,7 +81,7 @@ function hideLoading() {
   calcHeight();
 }
 
-useWindowSizeFn(calcHeight, { immediate: true });
+useWinResize(calcHeight, { immediate: true });
 
 watch(
   [
