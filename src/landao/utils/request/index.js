@@ -8,6 +8,9 @@ import { VAxios } from "./Axios";
 import { formatRequestDate, joinTimestamp, setObjToUrlParams } from "./utils";
 
 import { getEnv, getEnvMode } from "@/landao/env";
+// import { useMessage } from "@/landao/hooks";
+
+import Vrouter from "@/router";
 
 // 如果是mock模式 或 没启用直连代理 就不配置host 会走本地Mock拦截 或 Vite 代理
 const host =
@@ -165,7 +168,49 @@ const transform = {
    * @returns
    */
   responseInterceptorsCatch: (error, instance) => {
-    const { config } = error;
+    const { config, response } = error;
+    if (response) {
+      const { status } = response;
+      // const { createMsgBox } = useMessage();
+      if (status === 401) {
+        const userStore = useUserStore();
+        const { clearLoginInfo } = userStore;
+        clearLoginInfo();
+        const currRouter = Vrouter.currentRoute.value;
+        const redirect = currRouter
+          ? "?redirect=" + encodeURIComponent(currRouter.fullPath)
+          : "";
+        Vrouter.push(`/login${redirect}`);
+        logoutBox.destroy();
+        // const logoutBox = createMsgBox.alert({
+        //   header: "提示",
+        //   body: "登录超时，请重新登录",
+        //   theme: "warning",
+        //   closeOnEscKeydown: false,
+        //   closeBtn: false,
+        //   closeOnOverlayClick: false,
+        //   confirmBtn: {
+        //     content: "去登录",
+        //     variant: "base",
+        //     theme: "warning",
+        //   },
+        //   onConfirm: ({ e }) => {
+        //     const userStore = useUserStore();
+        //     const { clearLoginInfo } = userStore;
+        //     clearLoginInfo();
+        //     const currRouter = Vrouter.currentRoute.value;
+        //     const redirect = currRouter
+        //       ? "?redirect=" + encodeURIComponent(currRouter.fullPath)
+        //       : "";
+        //     Vrouter.push(`/login${redirect}`);
+        //     logoutBox.destroy();
+        //   },
+        // });
+
+        return Promise.reject(error);
+      }
+    }
+
     if (!config || !config.requestOptions.retry) return Promise.reject(error);
 
     config.retryCount = config.retryCount || 0;
@@ -196,7 +241,7 @@ function createAxios(opt) {
         // 例如: authenticationScheme: 'Bearer'
         authenticationScheme: "Bearer",
         // 超时
-        timeout: 10 * 1000,
+        timeout: 100 * 1000,
         // 携带Cookie
         withCredentials: true,
         // 头信息

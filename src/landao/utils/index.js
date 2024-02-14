@@ -176,7 +176,7 @@ export function deepMerge(src = {}, target = {}) {
  * @param {*} data
  * @returns
  */
-export function getSlot(slots, slot = "default", data,opts) {
+export function getSlot(slots, slot = "default", data, opts) {
   if (!slots || !Reflect.has(slots, slot)) {
     return null;
   }

@@ -81,7 +81,7 @@ export class VAxios {
         internal(this).options.requestOptions?.ignoreCancelToken;
       if (!ignoreCancel) axiosCanceler.addPending(config);
       if (requestInterceptors && isFunction(requestInterceptors)) {
-        config = requestInterceptors(config,internal(this).options);
+        config = requestInterceptors(config, internal(this).options);
       }
 
       return config;
