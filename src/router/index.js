@@ -1,9 +1,8 @@
 import { uniq } from "lodash-es";
 import { createRouter, createWebHistory, useRoute } from "vue-router";
+import Vrouter from "@/router";
 
 import { useSettingStore } from "@/store";
-
-import { getEnvMode } from "@/landao/env";
 
 // 导入homepage相关固定路由
 const homepageModules = import.meta.glob("./modules/**/homepage.js", {
@@ -69,7 +68,8 @@ export const getRoutesExpanded = () => {
 };
 
 export const getActive = (maxLevel = 3) => {
-  const route = useRoute();
+  // const route = useRoute();
+  const route = Vrouter.currentRoute.value;
   const settingStore = useSettingStore();
 
   if (!route.path) {
