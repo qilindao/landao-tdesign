@@ -23,7 +23,7 @@ export const FooterProps = {
   },
   okText: { type: String, default: "确认" },
   okType: { type: String, default: "primary" },
-  isShowFooter: { type: Boolean }, //是否显示底部
+  isShowFooter: { type: Boolean, default: true }, //是否显示底部
   footerAlign: {
     type: String,
     default: "right",
@@ -34,11 +34,12 @@ export const FooterProps = {
 };
 export const DialogProps = {
   loading: { type: Boolean },
-  isShowFooter: { type: Boolean }, //是否显示底部
   title: { type: String, default: "" }, //标题
+  helpMessage: { type: [String, Array] },
   closeFunc: {
     type: [Function, Object],
     default: null,
   },
+  width: [String, Number],
   ...FooterProps,
 };

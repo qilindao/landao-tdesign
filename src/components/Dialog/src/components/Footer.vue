@@ -1,5 +1,8 @@
 <template>
-  <div :class="['ld-dialog__footer', `ld-dialog__footer--${footerAlign}`]">
+  <div
+    :class="['ld-dialog__footer', `ld-dialog__footer--${footerAlign}`]"
+    v-if="isShowFooter"
+  >
     <template v-if="!$slots.footer">
       <slot name="insertFooter"></slot>
       <t-button
@@ -14,11 +17,11 @@
       <slot name="centerFooter"></slot>
       <t-button
         class="t-dialog__confirm"
+        v-bind="okButtonProps"
         :theme="okType"
         :loading="confirmLoading"
         :disabled="confirmLoading"
         @click="handleOk"
-        v-bind="okButtonProps"
         v-if="isShowOkBtn"
       >
         {{ okText }}</t-button
@@ -32,13 +35,12 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, toRefs } from "vue";
 import { FooterProps } from "../props";
 
 export default defineComponent({
   name: "DialogFooter",
   props: FooterProps,
-  inheritAttrs: false,
   emits: ["ok", "close"],
   setup(props, { emit }) {
     function handleOk() {

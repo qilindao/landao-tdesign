@@ -1,12 +1,15 @@
 <template>
-  <t-dialog
-    v-model:visible="visibleRef"
-    v-bind="getBindValues"
-    :cancelBtn="null"
-    :confirmBtn="null"
-    @close="handleClose"
-    :header="title"
-  >
+  <t-dialog v-bind="getBindValue" @close="handleCancel">
+    <template #header v-if="!$slots.header">
+      <DialogHeader
+        :helpMessage="getProps.helpMessage"
+        :title="getMergeProps.title"
+      />
+    </template>
+    <template v-else #header>
+      <slot name="header"></slot>
+    </template>
+
     <template #body>
       <t-loading
         size="small"
@@ -17,11 +20,14 @@
         <slot></slot>
       </t-loading>
     </template>
-    <template #footer v-if="isShowFooter || $slots.footer">
-      <DialogFooter v-bind="getProps" @close="handleClose" @ok="handleOk">
+    <template #footer v-if="!$slots.footer">
+      <DialogFooter v-bind="getProps" @close="handleCancel" @ok="handleOk">
         <template #[item]="data" v-for="item in Object.keys($slots)">
           <slot :name="item" v-bind="data || {}"></slot> </template
       ></DialogFooter>
+    </template>
+    <template v-else #footer>
+      <slot name="footer"></slot>
     </template>
   </t-dialog>
 </template>
@@ -32,62 +38,62 @@ import {
   computed,
   defineComponent,
   getCurrentInstance,
-  toRaw,
   unref,
   watch,
+  watchEffect,
 } from "vue";
-import { omit, merge } from "lodash-es";
-import { useAttrs } from "@/landao/hooks";
+import { omit } from "lodash-es";
+import { useAttrs } from "@landao/hooks";
 import { DialogProps } from "./props";
+import { deepMerge } from "@/landao/utils";
+import DialogHeader from "./components/Header";
 import DialogFooter from "./components/Footer";
+
 export default defineComponent({
   name: "LdDialog",
   props: DialogProps,
-  emits: ["register", "visible-change", "close", "ok"],
+  inheritAttrs: false,
+  emits: ["register", "visible-change", "cancel", "ok", "update:visible"],
   components: {
+    DialogHeader,
     DialogFooter,
   },
   setup(props, { emit }) {
     /** t-dialog 显示隐藏 */
     const visibleRef = ref(false);
     /** 最后一次 props */
-    const propsRef = ref(null);
+    const propsRef = ref({});
     const attrs = useAttrs();
 
     const getProps = computed(() => {
-      return {
-        ...unref(attrs),
+      const opt = {
         ...unref(getMergeProps),
         visible: unref(visibleRef),
+        cancelBtn: "null",
+        confirmBtn: "null",
+        header: false,
+      };
+      return {
+        ...opt,
       };
     });
 
     /** @description 合并 初始props 和 最后一次props */
     const getMergeProps = computed(() => {
-      return merge(toRaw(props), unref(propsRef));
+      return {
+        ...props,
+        ...unref(propsRef),
+      };
     });
 
-    const getBindValues = computed(() => {
-      return {
+    const getBindValue = computed(() => {
+      const attr = {
         ...attrs,
-        ...omit(unref(getProps), [
-          "loading",
-          "title",
-          "visible",
-          "closeFunc",
-          "confirmLoading",
-          "isShowCancelBtn",
-          "isShowOkBtn",
-          "isShowFooter",
-          "alignCenter",
-          "cancelButtonProps",
-          "cancelText",
-          "okButtonProps",
-          "okText",
-          "footerAlign",
-          "okType",
-        ]),
+        ...unref(getMergeProps),
+        visible: unref(visibleRef),
       };
+
+      return omit(attr, "title");
     });
 
     /** 内容区域 loading */
@@ -96,47 +102,50 @@ export default defineComponent({
     });
 
     /** @description 监听 props.visible 变化 */
-    watch(
-      () => props.visible,
-      (newVal, oldVal) => {
-        if (newVal !== oldVal) visibleRef.value = newVal;
-      },
-      { deep: true }
-    );
+    watchEffect(() => {
+      visibleRef.value = !!props.visible;
+    });
 
     /**@description  监听 visibleRef 变化 */
     watch(
-      () => visibleRef.value,
-      (visible) => {
-        emit("visible-change", visible);
-        instance && dialogInstance.emitVisible?.(visible, instance.uid);
+      () => unref(visibleRef),
+      (v) => {
+        emit("visible-change", v);
+        emit("update:visible", v);
+        if (instance && dialogMethods.emitVisible) {
+          dialogMethods.emitVisible(v, instance.uid);
+        }
+      },
+      {
+        immediate: false,
       }
     );
 
     const setDialogProps = (props) => {
-      propsRef.value = merge(unref(propsRef) || {}, props);
+      propsRef.value = deepMerge(unref(propsRef) || {}, props);
       if (Reflect.has(props, "visible")) {
         visibleRef.value = !!props.visible;
       }
     };
 
-    const dialogInstance = {
+    const dialogMethods = {
       setDialogProps,
       emitVisible: undefined,
     };
+
     const instance = getCurrentInstance();
 
-    instance && emit("register", dialogInstance, instance.uid);
+    instance && emit("register", dialogMethods, instance.uid);
 
-    const handleClose = async (event) => {
-      const { closeFunc } = unref(getProps);
-      emit("close", event);
-      if (closeFunc && isFunction(closeFunc)) {
-        const res = await closeFunc();
-        visibleRef.value = !res;
+    const handleCancel = async (event) => {
+      if (props.closeFunc && isFunction(props.closeFunc)) {
+        const isClose = await props.closeFunc();
+        visibleRef.value = !isClose;
         return;
       }
+
       visibleRef.value = false;
+      emit("cancel", event);
     };
 
     const handleOk = () => {
@@ -145,10 +154,11 @@ export default defineComponent({
 
     return {
       visibleRef,
-      getBindValues,
+      getBindValue,
       getLoading,
       getProps,
-      handleClose,
+      getMergeProps,
+      handleCancel,
       handleOk,
     };
   },

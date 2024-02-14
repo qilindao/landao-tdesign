@@ -62,17 +62,18 @@ export function useDialog() {
     }),
     openDialog: (visible = true, data, openOnSet = true) => {
       getInstance()?.setDialogProps({
-        visible: visible,
+        visible,
       });
       if (!data) return;
+      const id = unref(uid);
       if (openOnSet) {
-        dataTransferRef[unref(uid)] = null;
-        dataTransferRef[unref(uid)] = toRaw(data);
+        dataTransferRef[id] = null;
+        dataTransferRef[id] = toRaw(data);
         return;
       }
-      const equal = isEqual(toRaw(dataTransferRef[unref(uid)]), toRaw(data));
+      const equal = isEqual(toRaw(dataTransferRef[id]), toRaw(data));
       if (!equal) {
-        dataTransferRef[unref(uid)] = toRaw(data);
+        dataTransferRef[id] = toRaw(data);
       }
     },
     closeDialog: () => {
