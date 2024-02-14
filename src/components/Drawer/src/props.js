@@ -23,7 +23,6 @@ export const FooterProps = {
   },
   okText: { type: String, default: "确认" },
   okType: { type: String, default: "primary" },
-  isShowFooter: { type: Boolean }, //是否显示底部
   footerAlign: {
     type: String,
     default: "right",
@@ -40,6 +39,8 @@ export const DrawerProps = {
     type: [Function, Object],
     default: null,
   },
+  isDetail: { type: Boolean },
+  showDetailBack: { type: Boolean, default: true },
   /** 抽屉方向 */
   placement: {
     type: String,

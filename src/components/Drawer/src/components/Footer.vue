@@ -6,47 +6,43 @@
       justifyContent: attrs.placement === 'right' ? 'flex-start' : 'flex-end',
     }"
   >
-    <template v-if="!$slots.footer">
-      <template v-if="attrs.placement === 'right'">
-        <t-button
-          class="t-drawer__confirm"
-          :theme="okType"
-          :loading="confirmLoading"
-          :disabled="confirmLoading"
-          @click="handleOk"
-          v-bind="okButtonProps"
-          v-if="isShowOkBtn"
-        >
-          {{ okText }}</t-button
-        >
-      </template>
+  <slot name="insertFooter"></slot>
+    <template v-if="attrs.placement === 'right'">
       <t-button
-        v-bind="cancelButtonProps"
-        class="t-drawer__cancel"
-        theme="default"
-        @click="handleClose"
-        v-if="isShowCancelBtn"
+        class="t-drawer__confirm"
+        :theme="okType"
+        :loading="confirmLoading"
+        :disabled="confirmLoading"
+        @click="handleOk"
+        v-bind="okButtonProps"
+        v-if="isShowOkBtn"
       >
-        {{ cancelText }}</t-button
+        {{ okText }}</t-button
       >
-      <template v-if="attrs.placement !== 'right'">
-        <t-button
-          class="t-drawer__confirm"
-          :theme="okType"
-          :loading="confirmLoading"
-          :disabled="confirmLoading"
-          @click="handleOk"
-          v-bind="okButtonProps"
-          v-if="isShowOkBtn"
-        >
-          {{ okText }}</t-button
-        >
-      </template>
-      <slot name="appendFooter"></slot>
     </template>
-    <template v-else>
-      <slot name="footer"></slot>
+    <t-button
+      v-bind="cancelButtonProps"
+      class="t-drawer__cancel"
+      theme="default"
+      @click="handleClose"
+      v-if="isShowCancelBtn"
+    >
+      {{ cancelText }}</t-button
+    >
+    <template v-if="attrs.placement !== 'right'">
+      <t-button
+        class="t-drawer__confirm"
+        :theme="okType"
+        :loading="confirmLoading"
+        :disabled="confirmLoading"
+        @click="handleOk"
+        v-bind="okButtonProps"
+        v-if="isShowOkBtn"
+      >
+        {{ okText }}</t-button
+      >
     </template>
+    <slot name="appendFooter"></slot>
   </div>
 </template>
 

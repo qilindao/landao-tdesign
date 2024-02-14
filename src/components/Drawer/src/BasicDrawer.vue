@@ -1,13 +1,28 @@
 <template>
-  <t-drawer v-model:visible="visibleRef" v-bind="getBindValues" :header="title">
+  <t-drawer v-bind="getBindValue" @close="handleClose">
+    <template #header v-if="!$slots.header">
+      <DrawerHeader
+        :title="getMergeProps.title"
+        :isDetail="isDetail"
+        :showDetailBack="showDetailBack"
+        @close="handleClose"
+      >
+        <template #titleToolbar>
+          <slot name="titleToolbar"></slot>
+        </template> </DrawerHeader
+    ></template>
+    <template v-else #header><slot name="header"></slot></template>
     <template #body>
       <div v-loading="getLoading"><slot></slot></div>
     </template>
-    <template #footer>
+    <template #footer v-if="!$slots.footer">
       <DrawerFooter v-bind="getProps" @close="handleClose" @ok="handleOk">
         <template #[item]="data" v-for="item in Object.keys($slots)">
           <slot :name="item" v-bind="data || {}"></slot> </template
       ></DrawerFooter>
+    </template>
+    <template #footer v-else>
+      <slot name="footer"></slot>
     </template>
   </t-drawer>
 </template>
@@ -17,20 +32,20 @@ import {
   ref,
   computed,
   unref,
-  toRaw,
   watch,
   defineComponent,
   getCurrentInstance,
 } from "vue";
-import { omit, merge } from "lodash-es";
-import { useAttrs } from "@/landao/hooks";
+import { useAttrs } from "@landao/hooks";
 import { DrawerProps } from "./props";
+import { deepMerge } from "@/landao/utils";
+import DrawerHeader from "./components/Header";
 import DrawerFooter from "./components/Footer";
 
 export default defineComponent({
   name: "LdDrawer",
   emits: ["register", "visible-change", "close", "ok"],
-  components: { DrawerFooter },
+  components: { DrawerHeader, DrawerFooter },
   props: DrawerProps,
   setup(props, { emit }) {
     /** t-drawer 显示隐藏 */
@@ -40,38 +55,26 @@ export default defineComponent({
     const attrs = useAttrs();
 
     const getProps = computed(() => {
-      return {
+      const opt = {
+        closeBtn: true,
         ...unref(attrs),
         ...unref(getMergeProps),
         visible: unref(visibleRef),
       };
+      opt.title = undefined;
+
+      return opt;
     });
 
     /** @description 合并 初始props 和 最后一次props */
     const getMergeProps = computed(() => {
-      return merge(toRaw(props), unref(propsRef));
+      return deepMerge(props, unref(propsRef));
     });
 
-    const getBindValues = computed(() => {
+    const getBindValue = computed(() => {
       return {
         ...attrs,
-        ...omit(unref(getProps), [
-          "loading",
-          "title",
-          "visible",
-          "closeFunc",
-          "confirmLoading",
-          "isShowCancelBtn",
-          "isShowOkBtn",
-          "isShowFooter",
-          "alignCenter",
-          "cancelButtonProps",
-          "cancelText",
-          "okButtonProps",
-          "okText",
-          "footerAlign",
-          "okType",
-        ]),
+        ...unref(getProps),
       };
     });
 
@@ -99,7 +102,7 @@ export default defineComponent({
     );
 
     const setDrawerProps = (props) => {
-      propsRef.value = merge(unref(propsRef) || {}, props);
+      propsRef.value = deepMerge(unref(propsRef) || {}, props);
       if (Reflect.has(props, "visible")) {
         visibleRef.value = !!props.visible;
       }
@@ -130,9 +133,10 @@ export default defineComponent({
 
     return {
       visibleRef,
-      getBindValues,
+      getBindValue,
       getLoading,
       getProps,
+      getMergeProps,
       handleClose,
       handleOk,
     };
