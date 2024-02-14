@@ -1,4 +1,4 @@
-import { MessagePlugin, NotifyPlugin } from "tdesign-vue-next";
+import { MessagePlugin, NotifyPlugin, DialogPlugin } from "tdesign-vue-next";
 
 /**
  * 消息
@@ -98,5 +98,6 @@ export function useMessage() {
     createSuccessNotify,
     createErrorNotify,
     cloaseAllNotify,
+    createMsgBox: DialogPlugin,
   };
 }
