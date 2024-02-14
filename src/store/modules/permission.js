@@ -1,14 +1,14 @@
 import { defineStore } from "pinia";
-import { getMenuList } from '@/api/permission';
-import router, { fixedRouterList, homepageRouterList } from '@/router';
-import { store } from '@/store';
-import { transformObjectToRoute } from '@/utils/route';
-
+import { getUserRules } from "@/api/profile";
+import router, { fixedRouterList, homepageRouterList } from "@/router";
+import { store } from "@/store";
+import { transformObjectToRoute } from "@/utils/route";
 
 export const usePermissionStore = defineStore("permission", {
   state: () => ({
     whiteListRouters: ["/login"],
     routers: [],
+    power: [],
     removeRoutes: [],
     asyncRoutes: [],
   }),
@@ -28,11 +28,11 @@ export const usePermissionStore = defineStore("permission", {
       // this.routers = [...accessedRouters];
     },
     async buildAsyncRoutes() {
-
       try {
         // 发起菜单权限请求 获取菜单列表
-        const asyncRoutes = (await getMenuList()).list;
-        this.asyncRoutes = transformObjectToRoute(asyncRoutes);
+        const { menus, power } = (await getUserRules()).data;
+        this.asyncRoutes = transformObjectToRoute(menus);
+        this.power = power;
         await this.initRoutes();
         return this.asyncRoutes;
       } catch (error) {

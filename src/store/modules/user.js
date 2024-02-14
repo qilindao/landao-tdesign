@@ -1,13 +1,17 @@
 import { defineStore } from "pinia";
 import { usePermissionStore } from "@/store";
+import { doLogin, doLogout } from "@/api/passport";
+import { getUserProfile } from "@/api/profile";
 
 const InitUserInfo = {
-  name: "", // 用户名，用于展示在页面右上角头像处
+  nickname: "", // 用户名，用于展示在页面右上角头像处
   roles: [], // 前端权限模型使用 如果使用请配置modules/permission-fe.ts使用
 };
+
 export const useUserStore = defineStore("user", {
   state: () => ({
-    token: "yiyuan_token", //默认token不走权限
+    token: "", //默认token不走权限
+    expiresIn: 0,
     userInfo: { ...InitUserInfo },
   }),
   getters: {
@@ -17,38 +21,42 @@ export const useUserStore = defineStore("user", {
   },
   actions: {
     async login(userInfo) {
-      const mockLogin = async (userInfo) => {
-        return {
-          code: 200,
-          message: "登录成功",
-          data: "yiyuan_token",
-        };
-      };
-      const res = await mockLogin(userInfo);
-      if (res.code == 200) {
-        this.token = res.data;
-      } else {
-        throw res;
-      }
+      await doLogin(userInfo)
+        .then((res) => {
+          if (res.code == 200) {
+            const { accessToken, expiresIn } = res.data;
+            this.token = accessToken;
+            this.expiresIn = expiresIn;
+          } else {
+            throw res;
+          }
+        })
+        .catch((err) => {
+          throw err;
+        });
     },
     async getUserInfo() {
-      const mockRemoteUserInfo = async (token) => {
-        if (token === "yiyuan_token") {
-          return {
-            name: "Tencent",
-            roles: ["all"], // 前端权限模型使用 如果使用请配置modules/permission-fe.ts使用
-          };
-        }
-        return {
-          name: "td_dev",
-          roles: ["UserIndex", "DashboardBase", "login"], // 前端权限模型使用 如果使用请配置modules/permission-fe.ts使用
-        };
-      };
-      const res = await mockRemoteUserInfo(this.token);
-
-      this.userInfo = res;
+      await getUserProfile()
+        .then((res) => {
+          const { userInfo } = res.data;
+          this.userInfo = userInfo;
+        })
+        .catch((err) => {});
     },
     async logout() {
+      await doLogout()
+        .then((result) => {
+          if (result.code == 200) {
+            this.clearLoginInfo();
+          } else {
+            throw result;
+          }
+        })
+        .catch((err) => {
+          throw err;
+        });
+    },
+    clearLoginInfo() {
       this.token = "";
       this.userInfo = { ...InitUserInfo };
     },
