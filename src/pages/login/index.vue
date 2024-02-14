@@ -5,48 +5,25 @@
     <div class="login-container">
       <div class="title-container">
         <h1 class="title margin-no">登录到</h1>
-        <h1 class="title">TDesign Starter</h1>
-        <div class="sub-title">
-          <p class="tip">
-            {{ type == "register" ? "已有账号?" : "没有账号吗?" }}
-          </p>
-          <p
-            class="tip"
-            @click="switchType(type == 'register' ? 'login' : 'register')"
-          >
-            {{ type == "register" ? "登录" : "注册新账号" }}
-          </p>
-        </div>
+        <h1 class="title">LanDao Admin</h1>
       </div>
 
-      <login v-if="type === 'login'" />
-      <register v-else @register-success="switchType('login')" />
-      <tdesign-setting />
+      <login />
     </div>
 
     <footer class="copyright">
-      Copyright @ 2021-2022 Tencent. All Rights Reserved
+      Copyright @ 2021-2023 LanDaoAdmin. All Rights Reserved
     </footer>
   </div>
 </template>
-<script>
-export default {
-  name: "LoginIndex",
-};
-</script>
-<script setup>
-import { ref } from "vue";
 
-import TdesignSetting from "@/layouts/setting.vue";
+<script setup>
+defineOptions({
+  name: "LoginIndex",
+});
 
 import LoginHeader from "./components/Header.vue";
 import Login from "./components/Login.vue";
-import Register from "./components/Register.vue";
-
-const type = ref("login");
-const switchType = (val) => {
-  type.value = val;
-};
 </script>
 
 <style lang="less" scoped>
